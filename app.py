@@ -142,6 +142,11 @@ def info():
         "quiet": True,
         "noplaylist": True,
         "skip_download": True,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb", "web"]
+            }
+        },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
@@ -153,6 +158,8 @@ def info():
         clean_err = re.sub(r"\x1b\[[0-9;]*m", "", str(e)).strip()
         if "UNEXPECTED_EOF_WHILE_READING" in clean_err or "EOF occurred in violation of protocol" in clean_err:
             clean_err = "Connection blocked by your ISP (SSL EOF error). YouTube is restricted on your network. Please click 'Connect' in your VPN (e.g. MEGA VPN or ProtonVPN) and try again."
+        elif "Failed to extract any player response" in clean_err:
+            clean_err = "YouTube extraction temporarily rate-limited or blocked. Please retry in a few moments."
         elif "Unsupported URL" in clean_err:
             clean_err += ". That link is a home page or feed. Please open or copy the link to a specific video (e.g. tiktok.com/@user/video/... or youtube.com/watch?v=...)."
         return jsonify(error=clean_err[:300]), 422
@@ -275,6 +282,11 @@ def run_job(job_id, url, kind, height):
         "file_access_retries": 5,
         "socket_timeout": 30,
         "progress_hooks": [hook],
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb", "web"]
+            }
+        },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
