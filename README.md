@@ -1,13 +1,17 @@
-# <img src="static/logo.png" alt="Lomba Logo" width="38" height="38" align="center" style="vertical-align: middle; margin-right: 8px;" /> Lomba Video Downloader
+<div align="center">
+  <img src="static/favicon.png" alt="Lomba Logo" width="84" height="84" />
+  <h1>Lomba Video Downloader</h1>
+  <p><strong>A fast, self-hosted, cloud-ready universal media downloader powered by Flask and yt-dlp.</strong></p>
 
-**A fast, self-hosted, cloud-ready universal media downloader powered by Flask and yt-dlp.**
+  <p>
+    <a href="https://lomba-video-downloader.onrender.com"><img src="https://img.shields.io/badge/Live%20Demo-Render%20Online-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo"></a>
+    <a href="#license"><img src="https://img.shields.io/badge/License-MIT-FED063?style=for-the-badge" alt="License: MIT"></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+"></a>
+    <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready"></a>
+  </p>
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render%20Online-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://lomba-video-downloader.onrender.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-FED063?style=for-the-badge)](#license)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-
-> 🌐 **Live Demo:** [https://lomba-video-downloader.onrender.com](https://lomba-video-downloader.onrender.com)
+  <p>🌐 <strong>Live Demo:</strong> <a href="https://lomba-video-downloader.onrender.com">https://lomba-video-downloader.onrender.com</a></p>
+</div>
 
 ---
 

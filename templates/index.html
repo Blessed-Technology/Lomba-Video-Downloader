@@ -24,10 +24,10 @@
   html,body{margin:0}
   body{background:var(--bg);color:var(--text);font:400 16px/1.55 var(--font);min-height:100vh}
   main{max-width:960px;margin:0 auto;padding:56px 20px 80px}
-  .header-brand{display:flex;align-items:center;gap:20px;margin:0 0 28px}
-  .brand-logo{width:68px;height:68px;object-fit:contain;filter:drop-shadow(0 4px 18px rgba(254,208,99,0.35));flex-shrink:0}
-  h1{font:700 clamp(2.2rem,5vw,3.4rem)/1.1 var(--font);letter-spacing:-.02em;margin:0 0 6px;color:var(--gold)}
-  .sub{color:var(--muted);margin:0;max-width:56ch}
+  .header-brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;margin:0 0 32px}
+  .brand-logo{width:84px;height:84px;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(254,208,99,0.38));margin:0 auto}
+  h1{font:700 clamp(2.2rem,5vw,3.4rem)/1.15 var(--font);letter-spacing:-.02em;margin:0 0 4px;color:var(--gold)}
+  .sub{color:var(--muted);margin:0 auto;max-width:56ch}
 
   .bar{display:flex;border:2px solid var(--line);background:var(--panel);border-radius:14px;overflow:hidden}
   .bar:focus-within{border-color:var(--gold)}
@@ -59,8 +59,8 @@
   a.dl.busy{background:var(--panel-2);color:var(--gold);pointer-events:none}
 
   @media (max-width:760px){
-    .header-brand{flex-direction:column;align-items:flex-start;gap:14px;margin-bottom:24px}
-    .brand-logo{width:56px;height:56px}
+    .header-brand{gap:10px;margin-bottom:24px}
+    .brand-logo{width:68px;height:68px}
     #result.show{grid-template-columns:1fr}
     .bar{flex-direction:column}
     .bar button{padding:14px}
@@ -71,11 +71,9 @@
 <body>
 <main>
   <div class="header-brand">
-    <img src="/static/logo.png" alt="Lomba Logo" class="brand-logo">
-    <div>
-      <h1>Lomba Video Downloader</h1>
-      <p class="sub">Paste a link, pick a quality, and save the file. For videos you own or have permission to download.</p>
-    </div>
+    <img src="/static/favicon.png" alt="Lomba Logo" class="brand-logo">
+    <h1>Lomba Video Downloader</h1>
+    <p class="sub">Paste a link, pick a quality, and save the file. For videos you own or have permission to download.</p>
   </div>
 
   <div class="bar" role="search">
