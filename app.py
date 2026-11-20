@@ -57,6 +57,11 @@ if COOKIES_CONTENT and not COOKIE_FILE:
     except Exception as e:
         print(f"Warning: could not write cookies file: {e}")
 
+if not COOKIE_FILE:
+    local_cookie_path = os.path.join(BASE_DIR, "cookies.txt")
+    if os.path.isfile(local_cookie_path):
+        COOKIE_FILE = local_cookie_path
+
 
 # Partial and finished files live here so interrupted downloads can resume.
 # In serverless environments (e.g. Vercel), the filesystem is read-only except /tmp
@@ -136,6 +141,9 @@ def health():
         app="Lomba Video Downloader",
         version="1.0.0",
         ffmpeg=bool(shutil.which("ffmpeg")),
+        node=bool(shutil.which("node")),
+        cookies_loaded=bool(COOKIE_FILE and os.path.isfile(COOKIE_FILE)),
+        proxy_configured=bool(PROXY),
     )
 
 
