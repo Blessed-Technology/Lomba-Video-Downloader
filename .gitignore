@@ -52,3 +52,8 @@ desktop.ini
 
 # Vercel
 .vercel
+
+# Secrets & Cookies
+cookies.txt
+*cookies*.txt
+*.cookies
