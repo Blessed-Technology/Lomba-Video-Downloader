@@ -1,58 +1,136 @@
-# Lomba Video Downloader
+<div align="center">
+  <img src="static/logo.png" alt="Lomba Video Downloader Logo" width="105" />
+  <h1>Lomba Video Downloader</h1>
+  <p><strong>A fast, self-hosted, cloud-ready universal media downloader powered by Flask and yt-dlp.</strong></p>
 
-Self-hosted and cloud-ready universal video downloader (Flask + yt-dlp).
+  <p>
+    <a href="https://lomba-video-downloader.onrender.com">
+      <img src="https://img.shields.io/badge/Live%20Demo-Render%20Online-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo" />
+    </a>
+    <a href="#license">
+      <img src="https://img.shields.io/badge/License-MIT-FED063?style=for-the-badge" alt="License: MIT" />
+    </a>
+    <a href="https://www.python.org/">
+      <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+" />
+    </a>
+    <a href="https://www.docker.com/">
+      <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready" />
+    </a>
+  </p>
 
-## Run Locally
-1. Install ffmpeg (`sudo apt install ffmpeg` / `brew install ffmpeg` / `winget install ffmpeg`)
-2. `pip install -r requirements.txt`
-3. `python app.py` then open http://localhost:5000
+  <h3>🌐 <a href="https://lomba-video-downloader.onrender.com">https://lomba-video-downloader.onrender.com</a></h3>
+</div>
 
-## Deploy on Render (100% Free)
-Render is the **recommended free hosting platform** for Lomba Video Downloader because its free tier supports Docker and full `ffmpeg` processing without serverless timeouts.
+---
 
-1. Push this repository to your **GitHub** account.
-2. Sign in to [Render.com](https://render.com) (free account, no credit card required).
+## 🌟 Overview
+
+**Lomba Video Downloader** is a self-hosted, lightweight web application and browser extension that lets you download video and audio content from YouTube, TikTok, Instagram, Twitter/X, Vimeo, Facebook, and over 1,000+ supported sites.
+
+It includes automated `ffmpeg` media merging, client-side "Save As" file location picker, resumable downloads, and a bundled Manifest V3 browser extension.
+
+---
+
+## ✨ Features
+
+- 🌍 **1,000+ Platforms Supported**: YouTube, TikTok, Instagram, Twitter/X, Vimeo, Facebook, Reddit, and any site supported by `yt-dlp`.
+- 📁 **Save As Location Prompt**: Prompts you to pick your preferred destination folder and filename directly in your browser.
+- ⚡ **Full Quality & Formats**: Multiple MP4 video resolutions (1080p, 720p, 480p, 360p) and MP3 audio extraction with automatic `ffmpeg` merging.
+- 🧩 **Manifest V3 Browser Extension**: Download directly while browsing without leaving the tab.
+- 🐳 **Docker & Production Ready**: One-command setup with Docker Compose, preconfigured health checks, and Render cloud support.
+- 🛡️ **Built-in Security**: Localhost SSRF protection, strict HTTP security headers, and safe file cleanup.
+
+---
+
+## 🚀 Live Demo
+
+You can try the live hosted deployment here:  
+👉 **[https://lomba-video-downloader.onrender.com](https://lomba-video-downloader.onrender.com)**
+
+---
+
+## 🛠️ Deployment
+
+### Option 1: Deploy to Render (Recommended - 100% Free)
+
+Render's free tier provides Docker support, full `ffmpeg` installation, free SSL, and a public HTTPS URL:
+
+1. Fork or push this repository to your **GitHub** account.
+2. Sign in to [Render.com](https://render.com).
 3. Click **New +** &rarr; **Blueprint**.
-4. Select your GitHub repository.
-5. Render will detect [`render.yaml`](render.yaml) automatically. Click **Apply**.
-6. Render builds the Docker container, installs `ffmpeg`, and provides you a free, permanent HTTPS URL (e.g., `https://lomba-video-downloader.onrender.com`).
+4. Connect this repository — Render will automatically read [`render.yaml`](render.yaml).
+5. Click **Apply**. Render will build the container and provide your live URL:  
+   `https://lomba-video-downloader.onrender.com`
 
-*(You can also use this free Render URL in your Lomba Chrome Extension so it downloads from anywhere!)*
+---
 
-## Deploy to Vercel
-1. Install the Vercel CLI: `npm i -g vercel` (or connect your GitHub repository directly to Vercel).
-2. Inside this project folder, run:
+### Option 2: Docker & Docker Compose
+
+Run with Docker in a single command (`ffmpeg` and Python dependencies are automatically installed):
+
+```bash
+docker compose up -d --build
+```
+
+Access the application at `http://localhost:5000`.
+
+---
+
+### Option 3: Local Installation
+
+1. **Install `ffmpeg`** on your system:
+   - **Windows**: `winget install ffmpeg`
+   - **macOS**: `brew install ffmpeg`
+   - **Linux (Ubuntu/Debian)**: `sudo apt install ffmpeg`
+
+2. **Install Python dependencies**:
    ```bash
-   vercel
+   pip install -r requirements.txt
    ```
-3. Follow the CLI prompts. `vercel.json` and `api/index.py` are already pre-configured!
 
-> [!NOTE]
-> Vercel is a serverless platform with a 10s-60s function execution timeout, a 4.5MB payload limit, and no preinstalled `ffmpeg`. It is great for testing and fetching video details/direct links. For heavy multi-gigabyte video conversions requiring `ffmpeg` and long background processing, a dedicated container service (such as Render, Railway, Fly.io, or VPS) is recommended for production.
+3. **Run the server**:
+   ```bash
+   python app.py
+   ```
+   Open [http://localhost:5000](http://localhost:5000) in your web browser.
 
-## Config (env vars)
-- `ALLOWED_HOSTS` - comma list or `*` for all platforms supported by yt-dlp (default `*`)
-- `CACHE_DIR` - where partial/finished files are kept, default `./downloads`
-- `KEEP_HOURS` - delete cached files after this many hours, default 24
-- `MAX_DURATION_SECONDS` - default 14400 (4h); set to 0 for no limit
+---
 
-## Notes
-- Supports YouTube, TikTok, Instagram, Twitter/X, Vimeo, Facebook, and 1,000+ sites.
-- Keep yt-dlp updated (`pip install -U yt-dlp`); sites change often and old versions break.
-- Only download content you own, have permission for, or that is licensed for reuse.
+### Option 4: Deploy to Vercel (Serverless)
 
-## Resuming & Saving
-- When clicking Download in Chrome/Edge, a native "Save As" file picker opens so you can choose the destination folder and filename.
-- Interrupted server transfers resume from `.part` files in `CACHE_DIR`.
-- The finished file is served with HTTP Range support, so interrupted browser downloads can be resumed.
+```bash
+npm install -g vercel
+vercel
+```
+*Note: Vercel serverless functions have a 10s-60s execution timeout and lack `ffmpeg`. For production background conversions, Render or Docker is recommended.*
 
-## Chrome extension
-The `extension/` folder is a Manifest V3 extension that uses your running server.
+---
 
-1. Start the server (`python app.py`).
-2. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and pick the `extension/` folder.
-3. Open any supported video page, click the VideoGrab icon, choose a quality, and click Download.
+## 🧩 Browser Extension Setup (Chrome & Edge)
 
-- When download completes, Chrome prompts you with a "Save As" dialog to choose where to save the file.
-- Downloads run in the background, so you can close the popup. The icon badge shows progress.
-- Using a server on another machine: open the popup, expand **Server**, enter its address (e.g. https://my-server.example) and Save. Chrome will ask permission for that address. Exposing the server publicly without a login is not recommended.
+Lomba includes a Manifest V3 browser extension located in the `extension/` folder:
+
+1. Open `chrome://extensions` (or `edge://extensions`) in your browser.
+2. Turn on **Developer mode** in the top right.
+3. Click **Load unpacked** and choose the [`extension/`](extension/) directory.
+4. Pin the **Lomba** extension to your toolbar.
+5. *(Optional)* If your server is hosted remotely (e.g. on Render), open the extension popup, expand **Server**, enter `https://lomba-video-downloader.onrender.com`, and click **Save**.
+
+---
+
+## ⚙️ Configuration (.env)
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `ALLOWED_HOSTS` | `*` | Comma-separated domains allowed, or `*` for all platforms |
+| `MAX_DURATION_SECONDS` | `0` | Max video duration in seconds (`0` = no duration limit) |
+| `CACHE_DIR` | `downloads` | Local temporary folder for video caching & merging |
+| `KEEP_HOURS` | `24` | Hours to keep cached downloads before auto-cleanup |
+| `PORT` | `5000` | Port for the web server to bind to |
+| `PROXY` | *(None)* | Optional HTTP/SOCKS5 proxy URL (`http://127.0.0.1:7890`) |
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
