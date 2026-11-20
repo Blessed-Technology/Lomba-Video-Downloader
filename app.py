@@ -48,14 +48,52 @@ PROXY = os.environ.get("PROXY") or os.environ.get("HTTPS_PROXY") or os.environ.g
 COOKIE_FILE = os.environ.get("COOKIE_FILE")
 COOKIES_CONTENT = os.environ.get("YOUTUBE_COOKIES") or os.environ.get("COOKIES_TEXT")
 
+
+def normalize_cookies(raw_text: str) -> str:
+    """Normalize pasted Netscape cookies, unescaping literal newlines/tabs and repairing delimiters."""
+    if not raw_text:
+        return ""
+    text = raw_text.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\t", "\t")
+    lines = ["# Netscape HTTP Cookie File", "# https://curl.haxx.se/rfc/cookie_spec.html"]
+    for line in text.splitlines():
+        line = line.strip("\r\n")
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split("\t")
+        if len(parts) >= 7:
+            lines.append("\t".join(parts[:7]))
+        else:
+            space_parts = re.split(r"[ \t]{2,}|\t+", line.strip())
+            if len(space_parts) >= 7:
+                lines.append("\t".join(space_parts[:7]))
+            elif len(space_parts) == 6:
+                space_parts.append("")
+                lines.append("\t".join(space_parts))
+    return "\n".join(lines) + "\n"
+
+
+def get_loaded_cookie_count(filepath):
+    """Return the number of valid cookies parsed from the cookie file."""
+    if not filepath or not os.path.isfile(filepath):
+        return 0
+    try:
+        import http.cookiejar
+        cj = http.cookiejar.MozillaCookieJar(filepath)
+        cj.load(ignore_discard=True, ignore_expires=True)
+        return len(cj)
+    except Exception:
+        return 0
+
+
 if COOKIES_CONTENT and not COOKIE_FILE:
     cookie_path = os.path.join(tempfile.gettempdir(), "youtube_cookies.txt")
     try:
+        norm = normalize_cookies(COOKIES_CONTENT)
         with open(cookie_path, "w", encoding="utf-8") as f:
-            f.write(COOKIES_CONTENT.strip())
+            f.write(norm)
         COOKIE_FILE = cookie_path
     except Exception as e:
-        print(f"Warning: could not write cookies file: {e}")
+        print(f"Warning: could not write cookies file: {e}", flush=True)
 
 if not COOKIE_FILE:
     local_cookie_path = os.path.join(BASE_DIR, "cookies.txt")
@@ -136,13 +174,15 @@ def add_security_headers(response):
 
 @app.get("/api/health")
 def health():
+    cookie_count = get_loaded_cookie_count(COOKIE_FILE)
     return jsonify(
         status="ok",
         app="Lomba Video Downloader",
         version="1.0.0",
         ffmpeg=bool(shutil.which("ffmpeg")),
         node=bool(shutil.which("node")),
-        cookies_loaded=bool(COOKIE_FILE and os.path.isfile(COOKIE_FILE)),
+        cookies_loaded=bool(cookie_count > 0),
+        cookies_count=cookie_count,
         proxy_configured=bool(PROXY),
     )
 
@@ -163,25 +203,37 @@ def info():
     if not is_allowed(url):
         return jsonify(error="Paste a valid video link."), 400
 
+    has_cookies = bool(COOKIE_FILE and os.path.isfile(COOKIE_FILE))
+    player_clients = (
+        ["web", "mweb", "tv_samsung", "tv", "android", "ios"]
+        if has_cookies
+        else ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
+    )
+
     opts = {
         "quiet": True,
         "noplaylist": True,
         "skip_download": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
+                "player_client": player_clients
             }
+        },
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
         },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
         opts["proxy"] = PROXY
-    if COOKIE_FILE and os.path.isfile(COOKIE_FILE):
+    if has_cookies:
         opts["cookiefile"] = COOKIE_FILE
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
             data = ydl.extract_info(url, download=False)
     except yt_dlp.utils.DownloadError as e:
+        print(f"[api/info error] {e}", flush=True)
         clean_err = re.sub(r"\x1b\[[0-9;]*m", "", str(e)).strip()
         if "UNEXPECTED_EOF_WHILE_READING" in clean_err or "EOF occurred in violation of protocol" in clean_err:
             clean_err = "Connection blocked by your ISP (SSL EOF error). YouTube is restricted on your network. Please click 'Connect' in your VPN (e.g. MEGA VPN or ProtonVPN) and try again."
@@ -299,6 +351,13 @@ def run_job(job_id, url, kind, height):
         elif d["status"] == "finished":
             state["progress"] = 100.0
 
+    has_cookies = bool(COOKIE_FILE and os.path.isfile(COOKIE_FILE))
+    player_clients = (
+        ["web", "mweb", "tv_samsung", "tv", "android", "ios"]
+        if has_cookies
+        else ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
+    )
+
     opts = {
         "quiet": True,
         "noplaylist": True,
@@ -311,14 +370,18 @@ def run_job(job_id, url, kind, height):
         "progress_hooks": [hook],
         "extractor_args": {
             "youtube": {
-                "player_client": ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
+                "player_client": player_clients
             }
+        },
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
         },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
         opts["proxy"] = PROXY
-    if COOKIE_FILE and os.path.isfile(COOKIE_FILE):
+    if has_cookies:
         opts["cookiefile"] = COOKIE_FILE
     if MAX_DURATION_SECONDS > 0:
         opts["match_filter"] = yt_dlp.utils.match_filter_func(
