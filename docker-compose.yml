@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    container_name: lomba-downloader
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - ALLOWED_HOSTS=*
+      - MAX_DURATION_SECONDS=0
+      - KEEP_HOURS=24
+    volumes:
+      - ./downloads:/app/downloads
