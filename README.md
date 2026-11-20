@@ -127,4 +127,4 @@ Lomba includes a Manifest V3 browser extension located in the `extension/` folde
 
 ## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](LICENSE.md).
