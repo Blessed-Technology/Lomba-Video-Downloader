@@ -7,6 +7,18 @@ Self-hosted and cloud-ready universal video downloader (Flask + yt-dlp).
 2. `pip install -r requirements.txt`
 3. `python app.py` then open http://localhost:5000
 
+## Deploy on Render (100% Free)
+Render is the **recommended free hosting platform** for Lomba Video Downloader because its free tier supports Docker and full `ffmpeg` processing without serverless timeouts.
+
+1. Push this repository to your **GitHub** account.
+2. Sign in to [Render.com](https://render.com) (free account, no credit card required).
+3. Click **New +** &rarr; **Blueprint**.
+4. Select your GitHub repository.
+5. Render will detect [`render.yaml`](render.yaml) automatically. Click **Apply**.
+6. Render builds the Docker container, installs `ffmpeg`, and provides you a free, permanent HTTPS URL (e.g., `https://lomba-video-downloader.onrender.com`).
+
+*(You can also use this free Render URL in your Lomba Chrome Extension so it downloads from anywhere!)*
+
 ## Deploy to Vercel
 1. Install the Vercel CLI: `npm i -g vercel` (or connect your GitHub repository directly to Vercel).
 2. Inside this project folder, run:
