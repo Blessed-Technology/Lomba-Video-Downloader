@@ -45,6 +45,18 @@ MAX_DURATION_SECONDS = int(os.environ.get("MAX_DURATION_SECONDS", 0))  # 0 = no 
 
 PROXY = os.environ.get("PROXY") or os.environ.get("HTTPS_PROXY") or os.environ.get("HTTP_PROXY")
 
+COOKIE_FILE = os.environ.get("COOKIE_FILE")
+COOKIES_CONTENT = os.environ.get("YOUTUBE_COOKIES") or os.environ.get("COOKIES_TEXT")
+
+if COOKIES_CONTENT and not COOKIE_FILE:
+    cookie_path = os.path.join(tempfile.gettempdir(), "youtube_cookies.txt")
+    try:
+        with open(cookie_path, "w", encoding="utf-8") as f:
+            f.write(COOKIES_CONTENT.strip())
+        COOKIE_FILE = cookie_path
+    except Exception as e:
+        print(f"Warning: could not write cookies file: {e}")
+
 
 # Partial and finished files live here so interrupted downloads can resume.
 # In serverless environments (e.g. Vercel), the filesystem is read-only except /tmp
@@ -144,13 +156,15 @@ def info():
         "skip_download": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["android", "ios", "mweb", "web"]
+                "player_client": ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
             }
         },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
         opts["proxy"] = PROXY
+    if COOKIE_FILE and os.path.isfile(COOKIE_FILE):
+        opts["cookiefile"] = COOKIE_FILE
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
             data = ydl.extract_info(url, download=False)
@@ -158,8 +172,8 @@ def info():
         clean_err = re.sub(r"\x1b\[[0-9;]*m", "", str(e)).strip()
         if "UNEXPECTED_EOF_WHILE_READING" in clean_err or "EOF occurred in violation of protocol" in clean_err:
             clean_err = "Connection blocked by your ISP (SSL EOF error). YouTube is restricted on your network. Please click 'Connect' in your VPN (e.g. MEGA VPN or ProtonVPN) and try again."
-        elif "Failed to extract any player response" in clean_err:
-            clean_err = "YouTube extraction temporarily rate-limited or blocked. Please retry in a few moments."
+        elif "Failed to extract any player response" in clean_err or "Sign in to confirm you’re not a bot" in clean_err:
+            clean_err = "YouTube is rate-limiting this server IP. Try another video, or configure YOUTUBE_COOKIES / PROXY in your server environment."
         elif "Unsupported URL" in clean_err:
             clean_err += ". That link is a home page or feed. Please open or copy the link to a specific video (e.g. tiktok.com/@user/video/... or youtube.com/watch?v=...)."
         return jsonify(error=clean_err[:300]), 422
@@ -284,13 +298,15 @@ def run_job(job_id, url, kind, height):
         "progress_hooks": [hook],
         "extractor_args": {
             "youtube": {
-                "player_client": ["android", "ios", "mweb", "web"]
+                "player_client": ["tv_samsung", "tv", "mweb", "web", "android", "ios"]
             }
         },
         "js_runtimes": {"node": {}},
     }
     if PROXY:
         opts["proxy"] = PROXY
+    if COOKIE_FILE and os.path.isfile(COOKIE_FILE):
+        opts["cookiefile"] = COOKIE_FILE
     if MAX_DURATION_SECONDS > 0:
         opts["match_filter"] = yt_dlp.utils.match_filter_func(
             f"duration <= {MAX_DURATION_SECONDS}"

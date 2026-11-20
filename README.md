@@ -120,6 +120,8 @@ Lomba includes a Manifest V3 browser extension located in the `extension/` folde
 | `KEEP_HOURS` | `24` | Hours to keep cached downloads before auto-cleanup |
 | `PORT` | `5000` | Port for the web server to bind to |
 | `PROXY` | *(None)* | Optional HTTP/SOCKS5 proxy URL (`http://127.0.0.1:7890`) |
+| `YOUTUBE_COOKIES` | *(None)* | Raw Netscape cookie content to authenticate & bypass cloud IP rate limits |
+| `COOKIE_FILE` | *(None)* | Path to a `cookies.txt` file |
 
 ---
 
