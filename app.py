@@ -17,7 +17,7 @@ import threading
 import time
 from urllib.parse import urlparse
 
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, jsonify, render_template, request, send_file, send_from_directory
 import yt_dlp
 
 try:
@@ -150,6 +150,11 @@ def health():
 @app.get("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/favicon.ico")
+def root_favicon():
+    return send_from_directory(os.path.join(app.root_path, "static"), "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 
 @app.post("/api/info")
